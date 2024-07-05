@@ -20,7 +20,6 @@ package com.tananaev.passportreader
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
-import android.graphics.Bitmap
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
@@ -29,14 +28,12 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
-import com.tananaev.passportreader.ImageUtil.decodeImage
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import net.sf.scuba.smartcards.CardService
 import org.apache.commons.io.IOUtils
@@ -56,10 +53,7 @@ import org.jmrtd.lds.SecurityInfo
 import org.jmrtd.lds.icao.DG14File
 import org.jmrtd.lds.icao.DG1File
 import org.jmrtd.lds.icao.DG2File
-import org.jmrtd.lds.iso19794.FaceImageInfo
 import java.io.ByteArrayInputStream
-import java.io.DataInputStream
-import java.io.InputStream
 import java.security.KeyStore
 import java.security.MessageDigest
 import java.security.Signature
@@ -79,7 +73,6 @@ abstract class MainActivity : AppCompatActivity() {
     private lateinit var expirationDateView: EditText
     private lateinit var birthDateView: EditText
     private var passportNumberFromIntent = false
-    private var encodePhotoToBase64 = false
     private lateinit var mainLayout: View
     private lateinit var loadingLayout: View
 
@@ -91,7 +84,6 @@ abstract class MainActivity : AppCompatActivity() {
         val dateOfBirth = intent.getStringExtra("dateOfBirth")
         val dateOfExpiry = intent.getStringExtra("dateOfExpiry")
         val passportNumber = intent.getStringExtra("passportNumber")
-        encodePhotoToBase64 = intent.getBooleanExtra("photoAsBase64", false)
         if (dateOfBirth != null) {
             PreferenceManager.getDefaultSharedPreferences(this)
                 .edit().putString(KEY_BIRTH_DATE, dateOfBirth).apply()
@@ -211,8 +203,6 @@ abstract class MainActivity : AppCompatActivity() {
         private lateinit var dg2File: DG2File
         private lateinit var dg14File: DG14File
         private lateinit var sodFile: SODFile
-        private var imageBase64: String? = null
-        private var bitmap: Bitmap? = null
         private var chipAuthSucceeded = false
         private var passiveAuthSuccess = false
         private lateinit var dg14Encoded: ByteArray
@@ -266,20 +256,6 @@ abstract class MainActivity : AppCompatActivity() {
                 doChipAuth(service)
                 doPassiveAuth()
 
-                val allFaceImageInfo: MutableList<FaceImageInfo> = ArrayList()
-                dg2File.faceInfos.forEach {
-                    allFaceImageInfo.addAll(it.faceImageInfos)
-                }
-                if (allFaceImageInfo.isNotEmpty()) {
-                    val faceImageInfo = allFaceImageInfo.first()
-                    val imageLength = faceImageInfo.imageLength
-                    val dataInputStream = DataInputStream(faceImageInfo.imageInputStream)
-                    val buffer = ByteArray(imageLength)
-                    dataInputStream.readFully(buffer, 0, imageLength)
-                    val inputStream: InputStream = ByteArrayInputStream(buffer, 0, imageLength)
-                    bitmap = decodeImage(this@MainActivity, faceImageInfo.mimeType, inputStream)
-                    imageBase64 = Base64.encodeToString(buffer, Base64.DEFAULT)
-                }
             } catch (e: Exception) {
                 return e
             }
@@ -399,19 +375,7 @@ abstract class MainActivity : AppCompatActivity() {
                 }
                 intent.putExtra(ResultActivity.KEY_PASSIVE_AUTH, passiveAuthStr)
                 intent.putExtra(ResultActivity.KEY_CHIP_AUTH, chipAuthStr)
-                bitmap?.let { bitmap ->
-                    if (encodePhotoToBase64) {
-                        intent.putExtra(ResultActivity.KEY_PHOTO_BASE64, imageBase64)
-                    } else {
-                        val ratio = 320.0 / bitmap.height
-                        val targetHeight = (bitmap.height * ratio).toInt()
-                        val targetWidth = (bitmap.width * ratio).toInt()
-                        intent.putExtra(
-                            ResultActivity.KEY_PHOTO,
-                            Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false)
-                        )
-                    }
-                }
+
                 if (callingActivity != null) {
                     setResult(RESULT_OK, intent)
                     finish()

@@ -31,10 +31,6 @@ class ResultActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.output_nationality).text = intent.getStringExtra(KEY_NATIONALITY)
         findViewById<TextView>(R.id.output_passive_auth).text = intent.getStringExtra(KEY_PASSIVE_AUTH)
         findViewById<TextView>(R.id.output_chip_auth).text = intent.getStringExtra(KEY_CHIP_AUTH)
-        if (intent.hasExtra(KEY_PHOTO)) {
-            @Suppress("DEPRECATION")
-            findViewById<ImageView>(R.id.view_photo).setImageBitmap(intent.getParcelableExtra(KEY_PHOTO))
-        }
     }
 
     companion object {
@@ -43,8 +39,6 @@ class ResultActivity : AppCompatActivity() {
         const val KEY_GENDER = "gender"
         const val KEY_STATE = "state"
         const val KEY_NATIONALITY = "nationality"
-        const val KEY_PHOTO = "photo"
-        const val KEY_PHOTO_BASE64 = "photoBase64"
         const val KEY_PASSIVE_AUTH = "passiveAuth"
         const val KEY_CHIP_AUTH = "chipAuth"
     }

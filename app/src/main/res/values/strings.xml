@@ -11,5 +11,6 @@
     <string name="error_input">Please provide details to read passport</string>
     <string name="error_read">Failed to read passport</string>
 
+    <string name="result_b64_sod">Base 64 SOD DATA</string>
 
 </resources>

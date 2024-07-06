@@ -23,8 +23,10 @@ class ResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
+        findViewById<TextView>(R.id.output_b64_sod).text = intent.getStringExtra(SOD_BASE64)
     }
 
     companion object {
+        const val SOD_BASE64 = "sodbase64"
     }
 }

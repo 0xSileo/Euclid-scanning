@@ -24,6 +24,8 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.os.AsyncTask
+import android.os.Build
+import androidx.annotation.RequiresApi
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
@@ -180,7 +182,9 @@ abstract class MainActivity : AppCompatActivity() {
     private inner class ReadTask(private val isoDep: IsoDep, private val bacKey: BACKeySpec) : AsyncTask<Void?, Void?, Exception?>() {
 
         private lateinit var sodFile: SODFile
+        private lateinit var base64SODContent: String
 
+        @RequiresApi(Build.VERSION_CODES.O)
         override fun doInBackground(vararg params: Void?): Exception? {
             try {
                 isoDep.timeout = 10000
@@ -223,6 +227,9 @@ abstract class MainActivity : AppCompatActivity() {
                 val sodIn = service.getInputStream(PassportService.EF_SOD)
                 sodFile = SODFile(sodIn)
 
+                val encodedSODContent = sodFile.encoded
+                base64SODContent = Base64.getEncoder().encodeToString(encodedSODContent)
+                Log.i("euid", base64SODContent);
 
             } catch (e: Exception) {
                 return e
@@ -239,6 +246,8 @@ abstract class MainActivity : AppCompatActivity() {
                 } else {
                     Intent(this@MainActivity, ResultActivity::class.java)
                 }
+
+                intent.putExtra(ResultActivity.SOD_BASE64, base64SODContent)
 
                 if (callingActivity != null) {
                     setResult(RESULT_OK, intent)

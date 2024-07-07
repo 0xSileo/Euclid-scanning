@@ -15,15 +15,22 @@
  */
 package com.tananaev.passportreader
 
+import android.content.ClipData
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.content.ClipboardManager
+import android.util.Log
+
 
 class ResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
-        findViewById<TextView>(R.id.output_b64_sod).text = intent.getStringExtra(SOD_BASE64)
+
+        val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("label", intent.getStringExtra(SOD_BASE64))
+        clipboard.setPrimaryClip(clip)
     }
 
     companion object {

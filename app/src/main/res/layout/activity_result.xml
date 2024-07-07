@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/result_b64_sod"
+            android:text="@string/success"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         <LinearLayout
@@ -51,13 +51,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/output_b64_sod"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            tools:text="BASE 64 DATA" />
 
     </LinearLayout>
 

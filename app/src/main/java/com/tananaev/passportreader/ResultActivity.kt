@@ -15,37 +15,25 @@
  */
 package com.tananaev.passportreader
 
+import android.content.ClipData
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.content.ClipboardManager
+import android.util.Log
+
 
 class ResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
-        findViewById<TextView>(R.id.output_first_name).text = intent.getStringExtra(KEY_FIRST_NAME)
-        findViewById<TextView>(R.id.output_last_name).text = intent.getStringExtra(KEY_LAST_NAME)
-        findViewById<TextView>(R.id.output_gender).text = intent.getStringExtra(KEY_GENDER)
-        findViewById<TextView>(R.id.output_state).text = intent.getStringExtra(KEY_STATE)
-        findViewById<TextView>(R.id.output_nationality).text = intent.getStringExtra(KEY_NATIONALITY)
-        findViewById<TextView>(R.id.output_passive_auth).text = intent.getStringExtra(KEY_PASSIVE_AUTH)
-        findViewById<TextView>(R.id.output_chip_auth).text = intent.getStringExtra(KEY_CHIP_AUTH)
-        if (intent.hasExtra(KEY_PHOTO)) {
-            @Suppress("DEPRECATION")
-            findViewById<ImageView>(R.id.view_photo).setImageBitmap(intent.getParcelableExtra(KEY_PHOTO))
-        }
+
+        val clipboard: ClipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("label", intent.getStringExtra(SOD_BASE64))
+        clipboard.setPrimaryClip(clip)
     }
 
     companion object {
-        const val KEY_FIRST_NAME = "firstName"
-        const val KEY_LAST_NAME = "lastName"
-        const val KEY_GENDER = "gender"
-        const val KEY_STATE = "state"
-        const val KEY_NATIONALITY = "nationality"
-        const val KEY_PHOTO = "photo"
-        const val KEY_PHOTO_BASE64 = "photoBase64"
-        const val KEY_PASSIVE_AUTH = "passiveAuth"
-        const val KEY_CHIP_AUTH = "chipAuth"
+        const val SOD_BASE64 = "sodbase64"
     }
 }
